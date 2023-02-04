@@ -1,4 +1,4 @@
-package snek;
+package assets;
 
 public class Apple {
 	private int x;

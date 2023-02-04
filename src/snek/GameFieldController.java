@@ -1,7 +1,10 @@
 package snek;
 
-	import java.util.Timer;
+import java.util.Timer;
 import java.util.TimerTask;
+
+import assets.Apple;
+import assets.Snake;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
@@ -25,8 +28,8 @@ public class GameFieldController {
 	int score = 0;
 
 	// Board Size
-	int numberOfRows = 15;
-	int numberOfColumns = 15;
+	public static int numberOfRows = 15;
+	public static int numberOfColumns = 15;
 
 	// Direction
 	public static Direction snakeDirection = Direction.RIGHT;
@@ -40,6 +43,9 @@ public class GameFieldController {
 		fillBoard();
 		initializeGridPaneArray();
 
+		// Add Snake
+		Snake snake = new Snake();
+
 		// Add Apple
 		Apple apple = new Apple();
 		newApple(apple);
@@ -48,53 +54,19 @@ public class GameFieldController {
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
 
-			// Snake Head Position
-			int x = 0;
-			int y = 0;
-
 			// Run
 			@Override
 			public void run() {
 
 				// Recolor tile to snake tile
-				drawSnakeTile(x, y);
+				drawSnakeTile(snake.getX(), snake.getY());
 
 				// Consume
-				consumeApple(x, y, apple);
+				consumeApple(snake.getX(), snake.getY(), apple);
 
-				// Directions
-				switch (snakeDirection) {
-				case UP:
-					System.out.println("Up " + "X" + x + "Y" + y);
-					y--;
-					break;
-				case DOWN:
-					System.out.println("Down " + "X" + x + "Y" + y);
-					y++;
-					break;
-				case LEFT:
-					System.out.println("Left " + "X" + x + "Y" + y);
-					x--;
-					break;
-				case RIGHT:
-					System.out.println("Right " + "X" + x + "Y" + y);
-					x++;
-					break;
-				}
-
-				// Sends snake to the other side if it hits the right wall (and vice versa)
-				if (x == numberOfColumns) {
-					x = 0;
-				} else if (x < 0) {
-					x = numberOfColumns - 1;
-				}
-
-				// Sends snake to the other side if it hits the bottom (and vice versa
-				if (y >= numberOfRows) {
-					y = 0;
-				} else if (y < 0) {
-					y = numberOfRows - 1;
-				}
+				// Move
+				snake.move(snakeDirection);
+				System.out.println("Snake: X" + snake.getX() + ", Y" + snake.getY());
 
 				// Update Score Counter
 				updateScoreCounter(score);
@@ -137,9 +109,9 @@ public class GameFieldController {
 		apple.setX((int) (Math.random() * numberOfColumns));
 		apple.setY((int) (Math.random() * numberOfRows));
 		drawAppleTile(apple.getX(), apple.getY());
-		
+
 		System.out.println("New Apple");
-		System.out.println("Apple X: " + apple.getX() + " Apple Y: " + apple.getY());
+		System.out.println("Apple: X" + apple.getX() + ", Y" + apple.getY());
 	}
 
 	// Consume Apple
